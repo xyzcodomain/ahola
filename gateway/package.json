@@ -1,0 +1,9 @@
+{
+  "name": "ahola-gateway",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "express": "latest",
+    "http-proxy-middleware": "latest"
+  }
+}

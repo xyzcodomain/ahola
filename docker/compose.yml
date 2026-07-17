@@ -1,0 +1,51 @@
+services:
+
+  gateway:
+    image: node:22
+    container_name: ahola-gateway
+    working_dir: /app
+    volumes:
+      - ../gateway:/app
+    command:
+      sh -c "npm install && node index.js"
+    ports:
+      - "8080:8080"
+    networks:
+      - ahola-net
+
+  caddy:
+    image: caddy:2
+    container_name: ahola-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - ahola-net
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: ahola-storage
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ahola
+      MINIO_ROOT_PASSWORD: change-this-password
+    volumes:
+      - ../minio/data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - ahola-net
+
+volumes:
+  caddy-data:
+  caddy-config:
+
+networks:
+  ahola-net:
+    driver: bridge

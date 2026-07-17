@@ -1,0 +1,17 @@
+{
+  "localhost": {
+    "target": "http://localhost:3000"
+  },
+
+  "ahola.xyz": {
+    "target": "http://localhost:3000"
+  },
+
+  "api.ahola.xyz": {
+    "target": "http://localhost:4000"
+  },
+
+  "cdn.ahola.xyz": {
+    "target": "http://localhost:9000"
+  }
+}

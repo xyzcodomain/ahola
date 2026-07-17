@@ -12,15 +12,42 @@ sudo ./install.sh
 
 - Docker + Docker Compose
 - Ahola Gateway (Express reverse proxy)
+- Caddy (auto-HTTPS)
 - MinIO object storage
 - Firewall rules
 - Filesystem layout under `~/ahola`
+
+## Wildcard DNS
+
+Point one Cloudflare DNS record at the node:
+
+| Type | Name | Content |
+|------|------|---------|
+| A | `*` | `<NODE_IP>` |
+
+That single record covers every subdomain: `app.ahola.xyz`, `api.ahola.xyz`, etc.
+
+## Routing
+
+The gateway resolves requests in this order:
+
+1. Exact hostname in `gateway/routes.json`
+2. Wildcard `*.ahola.xyz` → app config in `~/ahola/apps/<subdomain>.json`
+
+Example app config `~/ahola/apps/myapp.json`:
+
+```json
+{
+  "target": "http://localhost:3000"
+}
+```
 
 ## Services
 
 | Service | Port | URL |
 |---------|------|-----|
 | Gateway | 8080 | http://localhost:8080 |
+| Caddy HTTPS | 443 | https://localhost |
 | MinIO API | 9000 | http://localhost:9000 |
 | MinIO Console | 9001 | http://localhost:9001 |
 
@@ -28,12 +55,14 @@ sudo ./install.sh
 
 ```
 ~/ahola/
-├── gateway/     # Gateway source
-├── apps/        # Deployed apps
-├── storage/     # Storage configs
-├── minio/data/  # MinIO data
-├── scripts/     # Helper scripts
-└── logs/        # Logs
+├── docker/       # Docker compose + Caddy config
+├── caddy/        # Caddyfile
+├── gateway/      # Gateway source
+├── apps/         # App configs (one JSON per subdomain)
+├── storage/      # Storage configs
+├── minio/data/   # MinIO data
+├── scripts/      # Helper scripts
+└── logs/         # Logs
 ```
 
 ## Scripts
