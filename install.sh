@@ -96,8 +96,14 @@ fi
 
 echo "[5/9] Installing gateway"
 
-cp -r "$REPO_DIR/gateway/"* \
-$HOME_DIR/ahola/gateway/
+GATEWAY_SRC="$REPO_DIR/gateway"
+GATEWAY_DST="$HOME_DIR/ahola/gateway"
+
+if [ "$GATEWAY_SRC" != "$GATEWAY_DST" ]; then
+    cp -r "$GATEWAY_SRC/"* "$GATEWAY_DST/"
+else
+    echo "Gateway source and destination are the same, skipping copy."
+fi
 
 
 cd $HOME_DIR/ahola/gateway
@@ -107,12 +113,24 @@ npm install
 
 echo "[6/9] Deploy configs"
 
-cp "$REPO_DIR/docker/compose.yml" \
-"$HOME_DIR/ahola/docker/compose.yml"
+COMPOSE_SRC="$REPO_DIR/docker/compose.yml"
+COMPOSE_DST="$HOME_DIR/ahola/docker/compose.yml"
+
+if [ "$COMPOSE_SRC" != "$COMPOSE_DST" ]; then
+    cp "$COMPOSE_SRC" "$COMPOSE_DST"
+else
+    echo "Compose file already in place, skipping copy."
+fi
 
 mkdir -p "$HOME_DIR/ahola/caddy"
-cp -r "$REPO_DIR/docker/caddy/"* \
-"$HOME_DIR/ahola/caddy/"
+CADDY_SRC="$REPO_DIR/docker/caddy"
+CADDY_DST="$HOME_DIR/ahola/caddy"
+
+if [ "$CADDY_SRC" != "$CADDY_DST" ]; then
+    cp -r "$CADDY_SRC/"* "$CADDY_DST/"
+else
+    echo "Caddy config already in place, skipping copy."
+fi
 
 
 echo "[7/9] Firewall"
