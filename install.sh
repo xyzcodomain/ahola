@@ -145,11 +145,17 @@ ufw --force enable
 
 echo "[8/9] Starting containers"
 
-cd $HOME_DIR/ahola
+COMPOSE_FILE="$HOME_DIR/ahola/docker/compose.yml"
 
-docker compose \
--f "$HOME_DIR/ahola/docker/compose.yml" \
-up -d
+if ss -tuln | grep -q ':80 '; then
+    echo "Warning: Port 80 is already in use."
+    echo "Skipping Docker Caddy service. Use host Caddy or free port 80 first."
+    echo "Starting gateway and minio only..."
+    docker compose -f "$COMPOSE_FILE" up -d gateway minio
+else
+    cd $HOME_DIR/ahola
+    docker compose -f "$COMPOSE_FILE" up -d
+fi
 
 
 echo "[9/9] Complete"
