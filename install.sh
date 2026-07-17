@@ -32,7 +32,7 @@ apt update
 apt upgrade -y
 
 
-echo "[2/9] Installing packages"
+echo "[2/9] Installing base packages"
 
 apt install -y \
 curl \
@@ -41,12 +41,37 @@ git \
 nano \
 htop \
 btop \
+ufw \
 ca-certificates \
+gnupg \
 nodejs \
 npm \
-docker.io \
-docker-compose-plugin \
 caddy
+
+
+echo "[2b/9] Adding Docker repository"
+
+install -m 0755 -d /etc/apt/keyrings
+
+curl -fsSL https://download.docker.com/linux/debian/gpg \
+| gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  > /etc/apt/sources.list.d/docker.list
+
+
+apt update
+
+apt install -y \
+docker-ce \
+docker-ce-cli \
+containerd.io \
+docker-buildx-plugin \
+docker-compose-plugin
 
 
 echo "[3/9] Docker setup"
@@ -90,8 +115,14 @@ cp -r "$REPO_DIR/docker/caddy/"* \
 "$HOME_DIR/ahola/caddy/"
 
 
-echo "[7/9] Firewall + SSL"
-echo "Depricated: Caddy will handle SSL automatically"
+echo "[7/9] Firewall"
+
+ufw allow ssh
+ufw allow 80
+ufw allow 443
+ufw allow 8080/tcp
+
+ufw --force enable
 
 
 echo "[8/9] Starting containers"
@@ -127,7 +158,7 @@ Gateway:
 http://localhost:8080
 
 HTTPS:
-https://localhost (via Caddy)
+https://localhost (via Caddy auto-SSL)
 
 MinIO:
 http://localhost:9001

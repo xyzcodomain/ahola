@@ -10,7 +10,7 @@ sudo ./install.sh
 
 ## What it sets up
 
-- Docker + Docker Compose
+- Docker CE + Docker Compose (from Docker's official repo)
 - Ahola Gateway (Express reverse proxy)
 - Caddy (auto-HTTPS)
 - MinIO object storage
