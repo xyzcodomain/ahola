@@ -2,7 +2,6 @@ services:
 
   gateway:
     image: node:22
-    container_name: ahola-gateway
     working_dir: /app
     volumes:
       - ../gateway:/app
@@ -12,14 +11,9 @@ services:
       - "8080:8080"
     networks:
       - ahola-net
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     deploy:
+      restart_policy:
+        condition: any
       resources:
         limits:
           memory: 256M
@@ -28,7 +22,6 @@ services:
 
   panel:
     image: node:22
-    container_name: ahola-panel
     working_dir: /app
     volumes:
       - ../panel:/app
@@ -40,14 +33,9 @@ services:
       - "3333:3333"
     networks:
       - ahola-net
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3333/api/apps"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     deploy:
+      restart_policy:
+        condition: any
       resources:
         limits:
           memory: 128M
@@ -56,7 +44,6 @@ services:
 
   minio:
     image: quay.io/minio/minio
-    container_name: ahola-storage
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ahola
@@ -68,12 +55,9 @@ services:
       - "9001:9001"
     networks:
       - ahola-net
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
+    deploy:
+      restart_policy:
+        condition: any
 
 networks:
   ahola-net:
