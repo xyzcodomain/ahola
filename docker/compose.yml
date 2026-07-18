@@ -77,4 +77,4 @@ services:
 
 networks:
   ahola-net:
-    driver: bridge
+    attachable: true
