@@ -44,13 +44,13 @@ function renderUnknownRoute(req, res) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Ahola Gateway</title>
+  <title>404 - Unknown Route</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -58,117 +58,109 @@ function renderUnknownRoute(req, res) {
       padding: 2rem;
     }
     .container {
-      max-width: 800px;
+      max-width: 720px;
       width: 100%;
     }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
     .header {
-      text-align: center;
       margin-bottom: 2rem;
     }
-    .logo {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-    h1 {
-      font-size: 4rem;
+    .error-code {
+      font-size: 5rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #f6821f;
+      line-height: 1;
     }
-    .subtitle {
-      color: #94a3b8;
-      font-size: 1.1rem;
+    .error-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
       margin-top: 0.5rem;
     }
+    .error-subtitle {
+      font-size: 0.95rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
     .section-title {
-      color: #667eea;
-      font-size: 0.875rem;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      color: #f6821f;
       margin-bottom: 1rem;
     }
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
-      margin-bottom: 1rem;
     }
     .info-item {
-      background: #0f172a;
-      padding: 0.75rem;
-      border-radius: 6px;
-      border-left: 3px solid #667eea;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-item:last-child {
+      border-bottom: none;
     }
     .label {
-      color: #94a3b8;
       font-size: 0.75rem;
+      color: #888;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
       margin-bottom: 0.25rem;
     }
     .value {
-      color: #e2e8f0;
       font-size: 0.95rem;
-      font-family: 'Courier New', monospace;
+      color: #333;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
       word-break: break-all;
     }
     .hostname {
-      color: #f59e0b;
+      color: #f6821f;
       font-weight: 600;
     }
     .code-block {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 6px;
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
       padding: 1rem;
       overflow-x: auto;
     }
     .code-block pre {
-      color: #e2e8f0;
-      font-family: 'Courier New', monospace;
+      color: #333;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
       font-size: 0.85rem;
-      line-height: 1.6;
+      line-height: 1.7;
     }
     .footer {
-      text-align: center;
       margin-top: 2rem;
-      color: #64748b;
-      font-size: 0.875rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.8rem;
     }
-    .badge {
-      display: inline-block;
-      background: #667eea;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-top: 0.5rem;
+    .divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 1.25rem 0;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">🔮</div>
-      <h1>404</h1>
-      <div class="subtitle">Unknown Route</div>
-      <div class="badge">Ahola Gateway</div>
+      <div class="error-code">404</div>
+      <div class="error-title">Unknown Route</div>
+      <div class="error-subtitle">The requested hostname does not have a configured route on this node.</div>
     </div>
 
     <div class="card">
-      <div class="section-title">📡 Request Info</div>
+      <div class="section-title">Request Details</div>
       <div class="info-grid">
         <div class="info-item">
           <div class="label">Hostname</div>
@@ -186,35 +178,31 @@ function renderUnknownRoute(req, res) {
           <div class="label">Path</div>
           <div class="value">${url}</div>
         </div>
+        <div class="info-item">
+          <div class="label">Time</div>
+          <div class="value">${now}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">User Agent</div>
+          <div class="value">${userAgent}</div>
+        </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="section-title">🖥️ Environment</div>
+      <div class="section-title">Environment</div>
       <div class="code-block">
-        <pre>Node:       ${env.node}
+        <pre>Gateway:    ${env.gateway}
+Node:       ${env.node}
 Platform:   ${env.platform} (${env.arch})
 Hostname:   ${env.hostname}
-Gateway:    ${env.gateway}
+Working Dir: ${env.cwd}
 Memory:     ${env.memory}
-Uptime:     ${env.uptime}
-Time:       ${now}
-User Agent: ${userAgent}</pre>
+Uptime:     ${env.uptime}</pre>
       </div>
     </div>
 
-    <div class="card">
-      <div class="section-title">💡 What happened?</div>
-      <p style="color: #cbd5e1; line-height: 1.6;">
-        The Ahola Gateway received a request for <strong style="color: #f59e0b;">${host}</strong> but couldn't find a matching route.
-        This usually means:
-      </p>
-      <ul style="color: #cbd5e1; line-height: 1.8; margin-top: 1rem; margin-left: 1.5rem;">
-        <li>The subdomain doesn't have an app config in <code style="background: #0f172a; padding: 0.2rem 0.4rem; border-radius: 3px;">~/ahola/apps/</code></li>
-        <li>DNS hasn't been pointed to this node yet</li>
-        <li>The app isn't running</li>
-      </ul>
-    </div>
+    <hr class="divider">
 
     <div class="footer">
       Ahola Node • ${env.hostname}
