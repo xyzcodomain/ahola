@@ -10,6 +10,10 @@ const PANEL_DIR = __dirname;
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(PANEL_DIR, "public")));
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(PANEL_DIR, "public", "index.html"));
+});
+
 function ensureAppsDir() {
   if (!fs.existsSync(APPS_DIR)) {
     fs.mkdirSync(APPS_DIR, { recursive: true });
