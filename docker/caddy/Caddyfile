@@ -13,19 +13,9 @@
 
 	reverse_proxy localhost:8080 {
 		transport http {
-			request_buffering disabled
-			response_buffering disabled
 			dial_timeout 5s
 			read_timeout 10s
 			write_timeout 10s
-		}
-	}
-
-	rate_limit {
-		zone ahola_rate_limit {
-			key {remote_host}
-			events 120
-			window 1m
 		}
 	}
 }
