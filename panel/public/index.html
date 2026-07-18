@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ahola Node - Deployment Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .4; }
-        }
-        .animate-pulse-custom {
-            animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen font-sans antialiased">
 
@@ -33,7 +24,7 @@
             </div>
             
             <div class="flex items-center gap-4">
-                <button class="bg-slate-950 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+                <button onclick="openDeployModal()" class="bg-slate-950 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
                     Deploy Application
                 </button>
                 <div class="w-8 h-8 rounded-full bg-slate-200 border border-slate-300"></div>
@@ -62,82 +53,178 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="bg-white border border-slate-200 rounded-xl p-5 animate-pulse-custom">
-                <div class="h-3.5 bg-slate-200 rounded w-1/3 mb-3"></div>
-                <div class="h-7 bg-slate-200 rounded w-1/2"></div>
+            <div class="bg-white border border-slate-200 rounded-xl p-5">
+                <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Total Apps</div>
+                <div id="stat-total" class="text-2xl font-semibold text-slate-900">-</div>
             </div>
-            <div class="bg-white border border-slate-200 rounded-xl p-5 animate-pulse-custom">
-                <div class="h-3.5 bg-slate-200 rounded w-1/4 mb-3"></div>
-                <div class="h-7 bg-slate-200 rounded w-2/3"></div>
+            <div class="bg-white border border-slate-200 rounded-xl p-5">
+                <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Active Routes</div>
+                <div id="stat-routes" class="text-2xl font-semibold text-slate-900">-</div>
             </div>
-            <div class="bg-white border border-slate-200 rounded-xl p-5 animate-pulse-custom">
-                <div class="h-3.5 bg-slate-200 rounded w-1/2 mb-3"></div>
-                <div class="h-7 bg-slate-200 rounded w-1/3"></div>
+            <div class="bg-white border border-slate-200 rounded-xl p-5">
+                <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Domain</div>
+                <div class="text-2xl font-semibold text-slate-900">.im</div>
             </div>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
             <div class="p-5 border-b border-slate-200 flex items-center justify-between">
-                <div class="h-4 bg-slate-200 rounded w-32 animate-pulse-custom"></div>
-                <div class="h-8 bg-slate-100 rounded w-48 animate-pulse-custom"></div>
+                <h2 class="text-sm font-semibold text-slate-900">Deployed Applications</h2>
+                <button onclick="openDeployModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                    New Deployment
+                </button>
             </div>
             
-            <div class="divide-y divide-slate-100">
-                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pulse-custom">
-                    <div class="flex items-center gap-4 w-full sm:w-1/3">
-                        <div class="w-10 h-10 bg-slate-200 rounded-lg shrink-0"></div>
-                        <div class="space-y-2 w-full">
-                            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
-                            <div class="h-3 bg-slate-200 rounded w-1/2"></div>
-                        </div>
-                    </div>
-                    <div class="space-y-2 w-full sm:w-1/4">
-                        <div class="h-3 bg-slate-200 rounded w-2/3"></div>
-                        <div class="h-3 bg-slate-200 rounded w-1/2"></div>
-                    </div>
-                    <div class="h-6 bg-slate-200 rounded-full w-20 self-start sm:self-center"></div>
-                    <div class="h-4 bg-slate-200 rounded w-4 hidden sm:block"></div>
-                </div>
-
-                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pulse-custom">
-                    <div class="flex items-center gap-4 w-full sm:w-1/3">
-                        <div class="w-10 h-10 bg-slate-200 rounded-lg shrink-0"></div>
-                        <div class="space-y-2 w-full">
-                            <div class="h-4 bg-slate-200 rounded w-2/3"></div>
-                            <div class="h-3 bg-slate-200 rounded w-1/3"></div>
-                        </div>
-                    </div>
-                    <div class="space-y-2 w-full sm:w-1/4">
-                        <div class="h-3 bg-slate-200 rounded w-1/2"></div>
-                        <div class="h-3 bg-slate-200 rounded w-1/3"></div>
-                    </div>
-                    <div class="h-6 bg-slate-200 rounded-full w-16 self-start sm:self-center"></div>
-                    <div class="h-4 bg-slate-200 rounded w-4 hidden sm:block"></div>
-                </div>
-
-                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pulse-custom">
-                    <div class="flex items-center gap-4 w-full sm:w-1/3">
-                        <div class="w-10 h-10 bg-slate-200 rounded-lg shrink-0"></div>
-                        <div class="space-y-2 w-full">
-                            <div class="h-4 bg-slate-200 rounded w-4/5"></div>
-                            <div class="h-3 bg-slate-200 rounded w-3/5"></div>
-                        </div>
-                    </div>
-                    <div class="space-y-2 w-full sm:w-1/4">
-                        <div class="h-3 bg-slate-200 rounded w-3/4"></div>
-                        <div class="h-3 bg-slate-200 rounded w-1/2"></div>
-                    </div>
-                    <div class="h-6 bg-slate-200 rounded-full w-24 self-start sm:self-center"></div>
-                    <div class="h-4 bg-slate-200 rounded w-4 hidden sm:block"></div>
-                </div>
+            <div id="apps-list" class="divide-y divide-slate-100">
+                <div class="p-8 text-center text-sm text-slate-500">Loading...</div>
             </div>
             
             <div class="bg-slate-50 px-5 py-4 border-t border-slate-200 text-xs text-slate-500 flex items-center gap-2">
                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>Missing a hostname route? Make sure your app is deployed and your DNS points directly to this Ahola node structure.</span>
+                <span>Deploy an app to create a route. DNS must point to this node.</span>
             </div>
         </div>
     </main>
 
+    <div id="deploy-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-slate-900">Deploy Application</h3>
+                <button onclick="closeDeployModal()" class="text-slate-400 hover:text-slate-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="deploy-form" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Subdomain</label>
+                    <input type="text" id="deploy-subdomain" placeholder="myapp" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent" required>
+                    <p class="text-xs text-slate-500 mt-1">Will be reachable at <span id="deploy-preview" class="font-medium text-slate-900">myapp.ahola.im</span></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Target URL</label>
+                    <input type="text" id="deploy-target" placeholder="http://localhost:3000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent" required>
+                    <p class="text-xs text-slate-500 mt-1">Internal address where your app is running</p>
+                </div>
+                <div id="deploy-error" class="hidden text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeDeployModal()" class="flex-1 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition">Cancel</button>
+                    <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Deploy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let apps = [];
+
+        async function fetchApps() {
+            try {
+                const res = await fetch(`${API_BASE}/api/apps`);
+                const data = await res.json();
+                apps = data.apps || [];
+                renderApps();
+            } catch (e) {
+                document.getElementById('apps-list').innerHTML = '<div class="p-8 text-center text-sm text-red-600">Failed to load apps</div>';
+            }
+        }
+
+        function renderApps() {
+            const container = document.getElementById('apps-list');
+            document.getElementById('stat-total').textContent = apps.length;
+            document.getElementById('stat-routes').textContent = apps.length;
+
+            if (apps.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-sm text-slate-500">No apps deployed yet. Click "Deploy Application" to get started.</div>';
+                return;
+            }
+
+            container.innerHTML = apps.map(app => `
+                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 w-full sm:w-1/3">
+                        <div class="w-10 h-10 bg-slate-100 rounded-lg shrink-0 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-900">${escapeHtml(app.name)}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(app.target)}</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-500 w-full sm:w-1/4">
+                        <div>Updated: ${new Date(app.updatedAt).toLocaleString()}</div>
+                        <div class="mt-0.5">Route: ${escapeHtml(app.name)}.ahola.im</div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            Active
+                        </span>
+                        <button onclick="deleteApp('${escapeHtml(app.name)}')" class="text-xs text-red-600 hover:text-red-700 font-medium px-2 py-1 rounded hover:bg-red-50 transition">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deployApp(subdomain, target) {
+            const res = await fetch(`${API_BASE}/api/deploy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subdomain, target })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Deployment failed');
+            return data;
+        }
+
+        async function deleteApp(name) {
+            if (!confirm(`Remove route for ${name}.ahola.im?`)) return;
+            const res = await fetch(`${API_BASE}/api/apps/${encodeURIComponent(name)}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Delete failed');
+            await fetchApps();
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function openDeployModal() {
+            document.getElementById('deploy-modal').classList.remove('hidden');
+            document.getElementById('deploy-modal').classList.add('flex');
+            document.getElementById('deploy-subdomain').value = '';
+            document.getElementById('deploy-target').value = '';
+            document.getElementById('deploy-error').classList.add('hidden');
+        }
+
+        function closeDeployModal() {
+            document.getElementById('deploy-modal').classList.add('hidden');
+            document.getElementById('deploy-modal').classList.remove('flex');
+        }
+
+        document.getElementById('deploy-subdomain').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            document.getElementById('deploy-preview').textContent = val + '.ahola.im';
+        });
+
+        document.getElementById('deploy-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('deploy-error');
+            const subdomain = document.getElementById('deploy-subdomain').value.trim();
+            const target = document.getElementById('deploy-target').value.trim();
+            errorEl.classList.add('hidden');
+            try {
+                await deployApp(subdomain, target);
+                closeDeployModal();
+                await fetchApps();
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+            }
+        });
+
+        fetchApps();
+    </script>
 </body>
 </html>
