@@ -112,8 +112,8 @@
                 </div>
                 <div class="bg-white border border-slate-200 rounded-xl p-5">
                     <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Storage Mode</div>
-                    <div class="text-2xl font-semibold text-slate-900">Local</div>
-                    <div class="text-xs text-slate-500 mt-1">Add 4+ nodes for distributed MinIO</div>
+                    <div id="stat-storage-mode" class="text-2xl font-semibold text-slate-900">Local</div>
+                    <div id="stat-storage-hint" class="text-xs text-slate-500 mt-1">Standalone MinIO on this node</div>
                 </div>
             </div>
 
@@ -271,6 +271,21 @@
         function renderNodes() {
             const container = document.getElementById('nodes-list');
             document.getElementById('stat-nodes').textContent = nodes.length;
+
+            const total = nodes.length;
+            const storageModeEl = document.getElementById('stat-storage-mode');
+            const storageHintEl = document.getElementById('stat-storage-hint');
+
+            if (total === 0) {
+                storageModeEl.textContent = 'Local';
+                storageHintEl.textContent = 'Standalone MinIO on this node';
+            } else if (total < 4) {
+                storageModeEl.textContent = 'Linked';
+                storageHintEl.textContent = `${total} node${total === 1 ? '' : 's'} linked - run independent MinIO per node`;
+            } else {
+                storageModeEl.textContent = 'Distributed';
+                storageHintEl.textContent = `${total} nodes - ready for MinIO distributed mode`;
+            }
 
             if (localNode) {
                 const localInfo = document.getElementById('local-node-info');

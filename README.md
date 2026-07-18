@@ -87,9 +87,27 @@ cd ~/ahola
 docker stack deploy -c docker/compose.yml ahola
 ```
 
-### Distributed MinIO
+### Storage by Node Count
 
-MinIO requires at least 4 nodes with drives for distributed/erasure-coded storage. Once you have 4+ nodes linked, update the MinIO service command in `docker/compose.yml` to use distributed mode:
+| Nodes | Mode | Behavior |
+|-------|------|----------|
+| 1 | Local | Standalone MinIO on this node |
+| 2 | Linked | Run independent MinIO on each node; apps can target either |
+| 3 | Linked | Same as 2-node; no erasure coding yet |
+| 4+ | Distributed | MinIO erasure-coded cluster across all nodes |
+
+### Two-Node Setup
+
+With only 2 nodes, MinIO cannot run in true distributed/erasure-coded mode. Instead:
+
+1. Keep each node's MinIO standalone
+2. Use the panel to link the second node
+3. Point apps to a specific node's MinIO via target URL, e.g. `http://node2:9000`
+4. Replicate critical data at the app level if needed
+
+### Distributed MinIO (4+ nodes)
+
+Once you have 4+ nodes linked, update the MinIO service command in `docker/compose.yml` to use distributed mode:
 
 ```yaml
 command: server http://node1/data http://node2/data http://node3/data http://node4/data --console-address ":9001"
