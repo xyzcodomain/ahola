@@ -1,7 +1,6 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const os = require("os");
 const {
   createProxyMiddleware
 } = require("http-proxy-middleware");
@@ -27,17 +26,6 @@ function renderUnknownRoute(req, res) {
   const userAgent = req.headers["user-agent"] || "unknown";
   const method = req.method;
   const url = req.url;
-
-  const env = {
-    node: process.version,
-    platform: os.platform(),
-    arch: os.arch(),
-    hostname: os.hostname(),
-    cwd: process.cwd(),
-    memory: `${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB`,
-    uptime: `${process.uptime().toFixed(2)}s`,
-    gateway: "Ahola Gateway v1.0.0"
-  };
 
   res.status(404).send(`<!DOCTYPE html>
 <html lang="en">
@@ -125,19 +113,6 @@ function renderUnknownRoute(req, res) {
       color: #f6821f;
       font-weight: 600;
     }
-    .code-block {
-      background: #f9f9f9;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      padding: 1rem;
-      overflow-x: auto;
-    }
-    .code-block pre {
-      color: #333;
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-      font-size: 0.85rem;
-      line-height: 1.7;
-    }
     .footer {
       margin-top: 2rem;
       text-align: center;
@@ -189,23 +164,10 @@ function renderUnknownRoute(req, res) {
       </div>
     </div>
 
-    <div class="card">
-      <div class="section-title">Environment</div>
-      <div class="code-block">
-        <pre>Gateway:    ${env.gateway}
-Node:       ${env.node}
-Platform:   ${env.platform} (${env.arch})
-Hostname:   ${env.hostname}
-Working Dir: ${env.cwd}
-Memory:     ${env.memory}
-Uptime:     ${env.uptime}</pre>
-      </div>
-    </div>
-
     <hr class="divider">
 
     <div class="footer">
-      Ahola Node • ${env.hostname}
+      Ahola Node
     </div>
   </div>
 </body>

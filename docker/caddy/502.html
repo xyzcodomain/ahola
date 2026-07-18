@@ -80,18 +80,9 @@
       font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
       word-break: break-all;
     }
-    .code-block {
-      background: #f9f9f9;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      padding: 1rem;
-      overflow-x: auto;
-    }
-    .code-block pre {
-      color: #333;
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-      font-size: 0.85rem;
-      line-height: 1.7;
+    .hostname {
+      color: #f6821f;
+      font-weight: 600;
     }
     .footer {
       margin-top: 2rem;
@@ -111,7 +102,7 @@
     <div class="header">
       <div class="error-code">502</div>
       <div class="error-title">Bad Gateway</div>
-      <div class="error-subtitle">The gateway received an invalid response from the upstream server.</div>
+      <div class="error-subtitle">The server received an invalid response from the upstream service.</div>
     </div>
 
     <div class="card">
@@ -119,7 +110,7 @@
       <div class="info-grid">
         <div class="info-item">
           <div class="label">Hostname</div>
-          <div class="value" id="hostname"></div>
+          <div class="value hostname" id="hostname"></div>
         </div>
         <div class="info-item">
           <div class="label">Client IP</div>
@@ -137,24 +128,6 @@
           <div class="label">Time</div>
           <div class="value" id="time"></div>
         </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Likely Causes</div>
-      <ul style="color: #555; line-height: 1.8; margin-left: 1.25rem;">
-        <li>The Ahola Gateway container is stopped or crashed</li>
-        <li>The gateway process is starting up</li>
-        <li>Out of memory or system overload</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Node Status</div>
-      <div class="code-block">
-        <pre>Check containers:  docker compose -f ~/ahola/docker/compose.yml ps
-Check gateway:     docker logs ahola-gateway
-Restart stack:     docker compose -f ~/ahola/docker/compose.yml up -d</pre>
       </div>
     </div>
 
