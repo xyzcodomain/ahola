@@ -160,6 +160,12 @@ ufw allow 80
 ufw allow 443
 ufw allow 8080/tcp
 ufw allow 3333/tcp
+ufw allow 2377/tcp
+ufw allow 7946/tcp
+ufw allow 7946/udp
+ufw allow 4789/udp
+ufw allow 9000/tcp
+ufw allow 9001/tcp
 
 ufw --force enable
 
