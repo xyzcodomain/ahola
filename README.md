@@ -25,14 +25,14 @@ Point one Cloudflare DNS record at the node:
 |------|------|---------|
 | A | `*` | `<NODE_IP>` |
 
-That single record covers every subdomain: `app.ahola.xyz`, `api.ahola.xyz`, etc.
+That single record covers every subdomain: `app.ahola.im`, `api.ahola.im`, etc.
 
 ## Routing
 
 The gateway resolves requests in this order:
 
 1. Exact hostname in `gateway/routes.json`
-2. Wildcard `*.ahola.xyz` → app config in `~/ahola/apps/<subdomain>.json`
+2. Wildcard `*.ahola.im` → app config in `~/ahola/apps/<subdomain>.json`
 
 Example app config `~/ahola/apps/myapp.json`:
 
@@ -69,3 +69,4 @@ Example app config `~/ahola/apps/myapp.json`:
 
 - `scripts/update.sh` — Pull latest + restart containers
 - `scripts/backup.sh` — Tar archive of `~/ahola`
+

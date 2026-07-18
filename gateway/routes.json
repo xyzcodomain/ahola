@@ -3,15 +3,16 @@
     "target": "http://localhost:3000"
   },
 
-  "ahola.xyz": {
+  "ahola.im": {
     "target": "http://localhost:3000"
   },
 
-  "api.ahola.xyz": {
+  "api.ahola.im": {
     "target": "http://localhost:4000"
   },
 
-  "cdn.ahola.xyz": {
+  "cdn.ahola.im": {
     "target": "http://localhost:9000"
   }
 }
+

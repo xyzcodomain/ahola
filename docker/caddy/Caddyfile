@@ -1,11 +1,11 @@
 {
-  email "admin@ahola.xyz"
+	email "leevi@ahola.im"
 }
 
 :80 {
-  redir https://{host}{uri} 301
+	reverse_proxy localhost:8080
 }
 
-:443 {
-  reverse_proxy ahola-gateway:8080
+:81 {
+	reverse_proxy localhost:9001
 }

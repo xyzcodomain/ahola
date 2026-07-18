@@ -10,7 +10,7 @@ echo "
 ██║  ██║██║  ██║╚██████╔╝███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
 
-Ahola Node Installer
+Ahola Node Installer, Press Yes Or Enter Password When Prompted.
 "
 
 
@@ -122,18 +122,15 @@ else
     echo "Compose file already in place, skipping copy."
 fi
 
-mkdir -p "$HOME_DIR/ahola/caddy"
-CADDY_SRC="$REPO_DIR/docker/caddy"
-CADDY_DST="$HOME_DIR/ahola/caddy"
 
-if [ "$CADDY_SRC" != "$CADDY_DST" ]; then
-    cp -r "$CADDY_SRC/"* "$CADDY_DST/"
-else
-    echo "Caddy config already in place, skipping copy."
-fi
+echo "[7/9] Configuring Caddy"
+
+install -D -m 0644 "$REPO_DIR/docker/caddy/Caddyfile" /etc/caddy/Caddyfile
+
+systemctl reload caddy || systemctl restart caddy
 
 
-echo "[7/9] Firewall"
+echo "[8/9] Firewall"
 
 ufw allow ssh
 ufw allow 80
@@ -143,22 +140,13 @@ ufw allow 8080/tcp
 ufw --force enable
 
 
-echo "[8/9] Starting containers"
+echo "[9/9] Starting containers + finalizing"
 
-COMPOSE_FILE="$HOME_DIR/ahola/docker/compose.yml"
+cd $HOME_DIR/ahola
 
-if ss -tuln | grep -q ':80 '; then
-    echo "Warning: Port 80 is already in use."
-    echo "Skipping Docker Caddy service. Use host Caddy or free port 80 first."
-    echo "Starting gateway and minio only..."
-    docker compose -f "$COMPOSE_FILE" up -d gateway minio
-else
-    cd $HOME_DIR/ahola
-    docker compose -f "$COMPOSE_FILE" up -d
-fi
-
-
-echo "[9/9] Complete"
+docker compose \
+-f "$HOME_DIR/ahola/docker/compose.yml" \
+up -d
 
 chown -R \
 $USER_NAME:$USER_NAME \
@@ -182,13 +170,19 @@ Gateway:
 http://localhost:8080
 
 HTTPS:
-https://localhost (via Caddy auto-SSL)
+https://localhost (via host Caddy)
 
-MinIO:
+MinIO Console:
+http://localhost:81 (via Caddy)
+
+MinIO API:
 http://localhost:9001
 
 Docker compose:
 $HOME_DIR/ahola/docker/compose.yml
+
+Caddy config:
+/etc/caddy/Caddyfile
 
 =================================
 "

@@ -10,19 +10,19 @@ In Cloudflare DNS, add one A record:
 |------|------|---------|-------|
 | A | `*` | `<NODE_IP>` | Proxied |
 
-That single record covers `anything.ahola.xyz`, `app.ahola.xyz`, `api.ahola.xyz`, etc.
+That single record covers `anything.ahola.im`, `app.ahola.im`, `api.ahola.im`, etc.
 
 ## Tunnel
 
 Point the tunnel at the wildcard origin:
 
 ```bash
-cloudflared tunnel route dns ahola-node *.ahola.xyz
+cloudflared tunnel route dns ahola-node *.ahola.im
 ```
 
 ## Gateway routing
 
-The gateway receives requests for any `*.ahola.xyz` hostname. The subdomain becomes the app identifier.
+The gateway receives requests for any `*.ahola.im` hostname. The subdomain becomes the app identifier.
 
 ## Quick start
 
@@ -53,3 +53,4 @@ WantedBy=multi-user.target
 systemctl daemon-reload
 systemctl enable --now cloudflared
 ```
+

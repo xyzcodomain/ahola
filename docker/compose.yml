@@ -13,20 +13,6 @@ services:
     networks:
       - ahola-net
 
-  caddy:
-    image: caddy:2
-    container_name: ahola-caddy
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    networks:
-      - ahola-net
-
   minio:
     image: quay.io/minio/minio
     container_name: ahola-storage
@@ -41,10 +27,6 @@ services:
       - "9001:9001"
     networks:
       - ahola-net
-
-volumes:
-  caddy-data:
-  caddy-config:
 
 networks:
   ahola-net:

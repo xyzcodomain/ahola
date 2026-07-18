@@ -15,7 +15,7 @@ function resolveTarget(host) {
     return routes[host].target;
   }
 
-  const match = host.match(/^(.+)\.ahola\.xyz$/);
+  const match = host.match(/^(.+)\.ahola\.im$/);
   if (match) {
     const appName = match[1];
     const appConfigPath = path.join(APPS_DIR, `${appName}.json`);
@@ -66,3 +66,4 @@ app.listen(
     );
   }
 );
+
