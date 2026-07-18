@@ -5,6 +5,7 @@ Turn any Debian machine into an Ahola Node.
 ```bash
 git clone https://github.com/xyzcodomain/ahola
 cd ahola
+chmod +x install.sh
 sudo ./install.sh
 ```
 
