@@ -7,7 +7,7 @@
 	file_server
 
 	handle_errors {
-		rewrite /502.html
+		rewrite * /502.html
 		file_server
 	}
 
