@@ -110,24 +110,33 @@ docker stack deploy -c docker/compose.yml ahola
 | 3 | Linked | Same as 2-node; no erasure coding yet |
 | 4+ | Distributed | MinIO erasure-coded cluster across all nodes |
 
-### Two-Node Setup
-
-With only 2 nodes, MinIO cannot run in true distributed/erasure-coded mode. Instead:
-
-1. Keep each node's MinIO standalone
-2. Use the panel to link the second node
-3. Point apps to a specific node's MinIO via target URL, e.g. `http://node2:9000`
-4. Replicate critical data at the app level if needed
-
 ### Distributed MinIO (4+ nodes)
 
-Once you have 4+ nodes linked, update the MinIO service command in `docker/compose.yml` to use distributed mode:
+MinIO requires at least 4 nodes with drives for distributed/erasure-coded storage. Once you have 4+ nodes linked, set the `MINIO_NODES` environment variable in `docker/compose.yml`:
 
 ```yaml
-command: server http://node1/data http://node2/data http://node3/data http://node4/data --console-address ":9001"
+environment:
+  MINIO_NODES: "http://node1/data http://node2/data http://node3/data http://node4/data"
 ```
 
-Each node must have a `minio/data` volume mounted and be reachable by its local IP.
+Each node must have a `minio/data` volume mounted and be reachable by its local IP. The stack will automatically switch from standalone to distributed mode when `MINIO_NODES` is set.
+
+### Two-Node Setup
+
+With only 2 nodes, MinIO cannot run in true distributed/erasure-coded mode. Instead, use one of these approaches:
+
+**Option A: Standalone MinIO with bucket replication**
+1. Deploy MinIO on both nodes as standalone instances
+2. Use the panel's Storage tab to configure replication target
+3. Set one node as source and the other as target
+4. Buckets created on the source will be replicated to the target
+
+**Option B: Single MinIO with shared storage**
+1. Run one MinIO instance on the manager node
+2. Use a shared volume or network storage
+3. Both nodes access the same MinIO instance via the gateway
+
+For true erasure-coded distributed storage, add 2 more nodes to reach the 4-node minimum.
 
 ## Directory layout
 

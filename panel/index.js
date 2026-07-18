@@ -2,11 +2,14 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+const { execSync } = require("child_process");
 
 const app = express();
 const PORT = 3333;
 const APPS_DIR = "/apps";
 const NODES_DIR = "/nodes";
+const STORAGE_DIR = "/storage";
+const JOBS_DIR = "/jobs";
 const PANEL_DIR = __dirname;
 const PUBLIC_DIR = path.join(PANEL_DIR, "public");
 
@@ -50,6 +53,14 @@ function ensureAppsDir() {
 
 function ensureNodesDir() {
   ensureDir(NODES_DIR);
+}
+
+function ensureStorageDir() {
+  ensureDir(STORAGE_DIR);
+}
+
+function ensureJobsDir() {
+  ensureDir(JOBS_DIR);
 }
 
 function getApps() {
@@ -234,6 +245,48 @@ app.delete("/api/nodes/:id", (req, res) => {
   }
 });
 
+app.get("/api/storage", (req, res) => {
+  try {
+    ensureStorageDir();
+    const filePath = path.join(STORAGE_DIR, "minio.json");
+    if (!fs.existsSync(filePath)) {
+      return res.json({ config: { mode: "standalone", nodes: [] } });
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    res.json({ config: data });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load storage config" });
+  }
+});
+
+app.post("/api/storage", (req, res) => {
+  try {
+    const { mode, nodes } = req.body;
+
+    if (!mode || !["standalone", "distributed", "replicated"].includes(mode)) {
+      return res.status(400).json({ error: "Invalid mode. Use: standalone, distributed, or replicated" });
+    }
+
+    ensureStorageDir();
+    const filePath = path.join(STORAGE_DIR, "minio.json");
+    const payload = JSON.stringify({
+      mode,
+      nodes: nodes || [],
+      updatedAt: new Date().toISOString(),
+    }, null, 2);
+
+    fs.writeFileSync(filePath, payload, "utf8");
+
+    return res.status(200).json({
+      message: "Storage config saved",
+      config: JSON.parse(payload),
+    });
+  } catch (e) {
+    console.error("Save storage config failed", e);
+    return res.status(500).json({ error: "Failed to save storage config" });
+  }
+});
+
 app.get("/api/system", (req, res) => {
   try {
     res.json({
@@ -246,6 +299,143 @@ app.get("/api/system", (req, res) => {
     });
   } catch (e) {
     res.status(500).json({ error: "Failed to load system info" });
+  }
+});
+
+app.post("/api/join-requests", (req, res) => {
+  try {
+    const { hostname, localIp } = req.body;
+
+    if (!hostname || !localIp) {
+      return res.status(400).json({ error: "hostname and localIp are required" });
+    }
+
+    ensureJobsDir();
+    const requestId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    const filePath = path.join(JOBS_DIR, `join-${requestId}.json`);
+    const payload = JSON.stringify({
+      id: requestId,
+      hostname,
+      localIp,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    }, null, 2);
+
+    fs.writeFileSync(filePath, payload, "utf8");
+
+    return res.status(201).json({
+      message: "Join request submitted",
+      request: JSON.parse(payload),
+    });
+  } catch (e) {
+    console.error("Join request failed", e);
+    return res.status(500).json({ error: "Failed to submit join request" });
+  }
+});
+
+app.get("/api/join-requests", (req, res) => {
+  try {
+    ensureJobsDir();
+    if (!fs.existsSync(JOBS_DIR)) return res.json({ requests: [] });
+
+    const files = fs.readdirSync(JOBS_DIR).filter((f) => f.startsWith("join-") && f.endsWith(".json"));
+    const requests = [];
+
+    for (const file of files) {
+      const filePath = path.join(JOBS_DIR, file);
+      try {
+        const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        requests.push(data);
+      } catch (e) {
+        console.error("Failed to parse join request", filePath, e.message);
+      }
+    }
+
+    return res.json({ requests: requests.sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load join requests" });
+  }
+});
+
+app.post("/api/join-requests/:id/accept", (req, res) => {
+  try {
+    const { id } = req.params;
+    ensureJobsDir();
+    const filePath = path.join(JOBS_DIR, `join-${id}.json`);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "Join request not found" });
+    }
+
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    if (data.status !== "pending") {
+      return res.status(400).json({ error: "Join request already processed" });
+    }
+
+    let token = "";
+    let managerIp = getLocalIp();
+
+    try {
+      token = execSync("docker swarm join-token -q worker", { encoding: "utf8" }).trim();
+    } catch (e) {
+      console.error("Failed to get swarm join token", e);
+      return res.status(500).json({ error: "Failed to get swarm join token" });
+    }
+
+    data.status = "accepted";
+    data.acceptedAt = new Date().toISOString();
+    data.token = token;
+    data.managerIp = managerIp;
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+    return res.status(200).json({
+      message: "Join request accepted",
+      request: data,
+      token,
+      managerIp,
+    });
+  } catch (e) {
+    console.error("Accept join request failed", e);
+    return res.status(500).json({ error: "Failed to accept join request" });
+  }
+});
+
+app.post("/api/join-requests/:id/deny", (req, res) => {
+  try {
+    const { id } = req.params;
+    ensureJobsDir();
+    const filePath = path.join(JOBS_DIR, `join-${id}.json`);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "Join request not found" });
+    }
+
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    data.status = "denied";
+    data.deniedAt = new Date().toISOString();
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+    return res.status(200).json({ message: "Join request denied", request: data });
+  } catch (e) {
+    console.error("Deny join request failed", e);
+    return res.status(500).json({ error: "Failed to deny join request" });
+  }
+});
+
+app.get("/api/join-requests/:id/status", (req, res) => {
+  try {
+    const { id } = req.params;
+    ensureJobsDir();
+    const filePath = path.join(JOBS_DIR, `join-${id}.json`);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "Join request not found" });
+    }
+
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    return res.json({ request: data });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load join request status" });
   }
 });
 

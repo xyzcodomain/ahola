@@ -18,6 +18,8 @@
                 <div class="hidden md:flex gap-6 text-sm font-medium text-slate-500">
                     <a href="#" onclick="showSection('apps')" class="text-slate-900 border-b-2 border-slate-900 px-1 py-5">Overview</a>
                     <a href="#" onclick="showSection('nodes')" class="hover:text-slate-900 px-1 py-5 transition">Nodes</a>
+                    <a href="#" onclick="showSection('storage')" class="hover:text-slate-900 px-1 py-5 transition">Storage</a>
+                    <a href="#" onclick="showSection('join-requests')" class="hover:text-slate-900 px-1 py-5 transition">Join Requests</a>
                 </div>
             </div>
             
@@ -127,7 +129,99 @@
                 </div>
             </div>
         </div>
+        <!-- Storage Section -->
+        <div id="storage-section" class="hidden">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Storage</h1>
+                    <p class="text-sm text-slate-500 mt-1">MinIO object storage configuration.</p>
+                </div>
+                
+                <button onclick="openStorageModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+                    Configure Storage
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white border border-slate-200 rounded-xl p-5">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Mode</div>
+                    <div id="storage-mode" class="text-2xl font-semibold text-slate-900">-</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl p-5">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Nodes</div>
+                    <div id="storage-nodes" class="text-2xl font-semibold text-slate-900">-</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl p-5">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">API Endpoint</div>
+                    <div class="text-lg font-semibold text-slate-900">localhost:9000</div>
+                    <div class="text-xs text-slate-500 mt-1">Console: localhost:9001</div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="p-5 border-b border-slate-200">
+                    <h2 class="text-sm font-semibold text-slate-900">Storage Nodes</h2>
+                </div>
+                
+                <div id="storage-nodes-list" class="divide-y divide-slate-100">
+                    <div class="p-8 text-center text-sm text-slate-500">Loading...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Join Requests Section -->
+        <div id="join-requests-section" class="hidden">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Join Requests</h1>
+                    <p class="text-sm text-slate-500 mt-1">Approve or deny worker nodes that want to join the swarm.</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="p-5 border-b border-slate-200">
+                    <h2 class="text-sm font-semibold text-slate-900">Pending Requests</h2>
+                </div>
+                
+                <div id="join-requests-list" class="divide-y divide-slate-100">
+                    <div class="p-8 text-center text-sm text-slate-500">Loading...</div>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <!-- Storage Modal -->
+    <div id="storage-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-slate-900">Configure Storage</h3>
+                <button onclick="closeStorageModal()" class="text-slate-400 hover:text-slate-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="storage-form" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Mode</label>
+                    <select id="storage-mode-select" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
+                        <option value="standalone">Standalone</option>
+                        <option value="distributed">Distributed</option>
+                        <option value="replicated">Replicated</option>
+                    </select>
+                    <p class="text-xs text-slate-500 mt-1">Distributed requires 4+ nodes. Replicated works with 2+ nodes.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Storage Nodes (comma-separated)</label>
+                    <textarea id="storage-nodes-input" rows="3" placeholder="http://node1:9000/data, http://node2:9000/data" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"></textarea>
+                    <p class="text-xs text-slate-500 mt-1">Enter MinIO data paths for each node</p>
+                </div>
+                <div id="storage-error" class="hidden text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeStorageModal()" class="flex-1 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition">Cancel</button>
+                    <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Deploy Modal -->
     <div id="deploy-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
@@ -208,6 +302,8 @@
         function showSection(section) {
             document.getElementById('apps-section').classList.toggle('hidden', section !== 'apps');
             document.getElementById('nodes-section').classList.toggle('hidden', section !== 'nodes');
+            document.getElementById('storage-section').classList.toggle('hidden', section !== 'storage');
+            document.getElementById('join-requests-section').classList.toggle('hidden', section !== 'join-requests');
         }
 
         async function fetchApps() {
@@ -367,6 +463,123 @@
             await fetchNodes();
         }
 
+        async function fetchStorage() {
+            try {
+                const res = await fetch(`${API_BASE}/api/storage`);
+                const data = await res.json();
+                renderStorage(data.config || { mode: 'standalone', nodes: [] });
+            } catch (e) {
+                document.getElementById('storage-nodes-list').innerHTML = '<div class="p-8 text-center text-sm text-red-600">Failed to load storage config</div>';
+            }
+        }
+
+        async function fetchJoinRequests() {
+            try {
+                const res = await fetch(`${API_BASE}/api/join-requests`);
+                const data = await res.json();
+                renderJoinRequests(data.requests || []);
+            } catch (e) {
+                document.getElementById('join-requests-list').innerHTML = '<div class="p-8 text-center text-sm text-red-600">Failed to load join requests</div>';
+            }
+        }
+
+        function renderJoinRequests(requests) {
+            const container = document.getElementById('join-requests-list');
+
+            if (requests.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-sm text-slate-500">No pending join requests.</div>';
+                return;
+            }
+
+            container.innerHTML = requests.map(req => `
+                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 w-full sm:w-1/3">
+                        <div class="w-10 h-10 bg-slate-100 rounded-lg shrink-0 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-900">${escapeHtml(req.hostname)}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(req.localIp)}</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-500 w-full sm:w-1/4">
+                        <div>Status: <span class="font-medium ${req.status === 'pending' ? 'text-yellow-700' : req.status === 'accepted' ? 'text-green-700' : 'text-red-700'}">${escapeHtml(req.status)}</span></div>
+                        <div class="mt-0.5">Requested: ${new Date(req.createdAt).toLocaleString()}</div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        ${req.status === 'pending' ? `
+                            <button onclick="acceptJoinRequest('${escapeHtml(req.id)}')" class="text-xs text-green-600 hover:text-green-700 font-medium px-3 py-1.5 rounded bg-green-50 hover:bg-green-100 transition">Accept</button>
+                            <button onclick="denyJoinRequest('${escapeHtml(req.id)}')" class="text-xs text-red-600 hover:text-red-700 font-medium px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 transition">Deny</button>
+                        ` : '<span class="text-xs text-slate-400">Processed</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function acceptJoinRequest(id) {
+            if (!confirm(`Accept join request from ${id}? This will generate a swarm join token.`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/join-requests/${encodeURIComponent(id)}/accept`, { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to accept');
+                alert(`Join request accepted!\n\nToken: ${data.token}\nManager: ${data.managerIp}\n\nShare these details with the worker node.`);
+                await fetchJoinRequests();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function denyJoinRequest(id) {
+            if (!confirm(`Deny join request from ${id}?`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/join-requests/${encodeURIComponent(id)}/deny`, { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to deny');
+                await fetchJoinRequests();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        function renderStorage(config) {
+            document.getElementById('storage-mode').textContent = config.mode || 'standalone';
+            document.getElementById('storage-nodes').textContent = (config.nodes || []).length;
+
+            const container = document.getElementById('storage-nodes-list');
+            if (!config.nodes || config.nodes.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-sm text-slate-500">No storage nodes configured. Click "Configure Storage" to add nodes.</div>';
+                return;
+            }
+
+            container.innerHTML = config.nodes.map((node, idx) => `
+                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 w-full sm:w-1/3">
+                        <div class="w-10 h-10 bg-slate-100 rounded-lg shrink-0 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-900">Node ${idx + 1}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(node)}</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-500 w-full sm:w-1/4">
+                        <div>Status: Active</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function saveStorage(mode, nodes) {
+            const res = await fetch(`${API_BASE}/api/storage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode, nodes: nodes.split(',').map(n => n.trim()).filter(Boolean) })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to save storage config');
+            return data;
+        }
+
         function escapeHtml(str) {
             const div = document.createElement('div');
             div.textContent = str;
@@ -440,9 +653,38 @@
             }
         });
 
+        function openStorageModal() {
+            document.getElementById('storage-modal').classList.remove('hidden');
+            document.getElementById('storage-modal').classList.add('flex');
+            document.getElementById('storage-error').classList.add('hidden');
+        }
+
+        function closeStorageModal() {
+            document.getElementById('storage-modal').classList.add('hidden');
+            document.getElementById('storage-modal').classList.remove('flex');
+        }
+
+        document.getElementById('storage-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('storage-error');
+            const mode = document.getElementById('storage-mode-select').value;
+            const nodes = document.getElementById('storage-nodes-input').value;
+            errorEl.classList.add('hidden');
+            try {
+                await saveStorage(mode, nodes);
+                closeStorageModal();
+                await fetchStorage();
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+            }
+        });
+
         async function init() {
             await fetchApps();
             await fetchNodes();
+            await fetchStorage();
+            await fetchJoinRequests();
         }
 
         init();

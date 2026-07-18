@@ -27,6 +27,7 @@ services:
       - ../panel:/app
       - ../apps:/apps
       - ../nodes:/nodes
+      - ../storage:/storage
     command:
       sh -c "npm install && node index.js"
     ports:
@@ -44,10 +45,10 @@ services:
 
   minio:
     image: quay.io/minio/minio
-    command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ahola
       MINIO_ROOT_PASSWORD: change-this-password
+      MINIO_NODES: ${MINIO_NODES:-}
     volumes:
       - ../minio/data:/data
     ports:
@@ -58,6 +59,19 @@ services:
     deploy:
       restart_policy:
         condition: any
+      placement:
+        constraints:
+          - node.labels.ahola.storage == true
+    command: >
+      sh -c "
+        if [ -n \"$MINIO_NODES\" ]; then
+          echo \"Starting MinIO in distributed mode with: $MINIO_NODES\";
+          server $MINIO_NODES --console-address ':9001';
+        else
+          echo \"Starting MinIO in standalone mode\";
+          server /data --console-address ':9001';
+        fi
+      "
 
 networks:
   ahola-net:

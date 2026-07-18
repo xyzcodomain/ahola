@@ -127,6 +127,8 @@ cd $HOME_DIR/ahola/panel
 
 npm install
 
+chmod +x "$HOME_DIR/ahola/scripts/join.sh"
+
 
 echo "[7/9] Deploy configs"
 
