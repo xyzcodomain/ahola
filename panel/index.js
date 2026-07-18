@@ -8,13 +8,23 @@ const PORT = 3333;
 const APPS_DIR = "/apps";
 const NODES_DIR = "/nodes";
 const PANEL_DIR = __dirname;
+const PUBLIC_DIR = path.join(PANEL_DIR, "public");
 
 app.use(express.json({ limit: "1mb" }));
-app.use(express.static(path.join(PANEL_DIR, "public")));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(PANEL_DIR, "public", "index.html"));
-});
+function serveIndex(req, res) {
+  const filePath = path.join(PUBLIC_DIR, "index.html");
+  if (!fs.existsSync(filePath)) {
+    console.error("Panel index missing at", filePath);
+    return res.status(500).send("Panel assets not found");
+  }
+  res.sendFile(filePath);
+}
+
+app.get("/", serveIndex);
+app.get("/index.html", serveIndex);
+
+app.use(express.static(PUBLIC_DIR));
 
 function getLocalIp() {
   const interfaces = os.networkInterfaces();
@@ -241,4 +251,12 @@ app.get("/api/system", (req, res) => {
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Ahola Panel running on :${PORT}`);
+  console.log("Panel dir:", PANEL_DIR);
+  console.log("Public dir:", PUBLIC_DIR);
+  try {
+    const files = fs.readdirSync(PUBLIC_DIR);
+    console.log("Public files:", files);
+  } catch (e) {
+    console.error("Public dir read failed:", e.message);
+  }
 });
