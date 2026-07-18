@@ -13,6 +13,7 @@ sudo ./install.sh
 
 - Docker CE + Docker Compose (from Docker's official repo)
 - Ahola Gateway (Express reverse proxy)
+- Ahola Panel (deployment dashboard)
 - Caddy (auto-HTTPS)
 - MinIO object storage
 - Firewall rules
@@ -47,6 +48,7 @@ Example app config `~/ahola/apps/myapp.json`:
 
 | Service | Port | URL |
 |---------|------|-----|
+| Panel | 3333 | http://localhost:3333 |
 | Gateway | 8080 | http://localhost:8080 |
 | Caddy HTTPS | 443 | https://localhost |
 | MinIO API | 9000 | http://localhost:9000 |
@@ -59,6 +61,8 @@ Example app config `~/ahola/apps/myapp.json`:
 ├── docker/       # Docker compose + Caddy config
 ├── caddy/        # Caddyfile
 ├── gateway/      # Gateway source
+├── panel/        # Deployment dashboard
+│   └── public/   # Dashboard HTML
 ├── apps/         # App configs (one JSON per subdomain)
 ├── storage/      # Storage configs
 ├── minio/data/   # MinIO data

@@ -26,6 +26,33 @@ services:
         reservations:
           memory: 128M
 
+  panel:
+    image: node:22
+    container_name: ahola-panel
+    working_dir: /app
+    volumes:
+      - ../panel:/app
+      - ../apps:/apps
+    command:
+      sh -c "npm install && node index.js"
+    ports:
+      - "3333:3333"
+    networks:
+      - ahola-net
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/api/apps"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
   minio:
     image: quay.io/minio/minio
     container_name: ahola-storage

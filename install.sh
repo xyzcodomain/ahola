@@ -84,7 +84,7 @@ usermod -aG docker $USER_NAME
 
 echo "[4/9] Creating Ahola filesystem"
 
-mkdir -p $HOME_DIR/ahola/{gateway,apps,storage,minio/data,scripts,logs,docker}
+mkdir -p $HOME_DIR/ahola/{gateway,apps,storage,minio/data,scripts,logs,docker,panel}
 
 
 if [ ! -d "$REPO_DIR/gateway" ]; then
@@ -111,7 +111,24 @@ cd $HOME_DIR/ahola/gateway
 npm install
 
 
-echo "[6/9] Deploy configs"
+echo "[6/9] Installing panel"
+
+PANEL_SRC="$REPO_DIR/panel"
+PANEL_DST="$HOME_DIR/ahola/panel"
+
+if [ "$PANEL_SRC" != "$PANEL_DST" ]; then
+    cp -r "$PANEL_SRC/"* "$PANEL_DST/"
+else
+    echo "Panel source and destination are the same, skipping copy."
+fi
+
+
+cd $HOME_DIR/ahola/panel
+
+npm install
+
+
+echo "[7/9] Deploy configs"
 
 COMPOSE_SRC="$REPO_DIR/docker/compose.yml"
 COMPOSE_DST="$HOME_DIR/ahola/docker/compose.yml"
@@ -142,6 +159,7 @@ ufw allow ssh
 ufw allow 80
 ufw allow 443
 ufw allow 8080/tcp
+ufw allow 3333/tcp
 
 ufw --force enable
 
@@ -171,6 +189,9 @@ echo "
 
 Home:
 $HOME_DIR/ahola
+
+Panel:
+http://localhost:3333
 
 Gateway:
 http://localhost:8080
