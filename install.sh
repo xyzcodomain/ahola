@@ -84,7 +84,7 @@ usermod -aG docker $USER_NAME
 
 echo "[4/9] Creating Ahola filesystem"
 
-mkdir -p $HOME_DIR/ahola/{gateway,apps,storage,minio/data,scripts,logs,docker,panel}
+mkdir -p $HOME_DIR/ahola/{gateway,apps,storage,minio/data,scripts,logs,docker,panel,nodes}
 
 
 if [ ! -d "$REPO_DIR/gateway" ]; then
@@ -210,6 +210,18 @@ $HOME_DIR/ahola/docker/compose.yml
 
 Caddy config:
 /etc/caddy/Caddyfile
+
+=================================
+
+To initialize Docker Swarm (manager):
+  docker swarm init --advertise-addr <MANAGER_IP>
+
+To join a worker:
+  docker swarm join --token <TOKEN> <MANAGER_IP>:2377
+
+To deploy the stack in swarm mode:
+  cd ~/ahola
+  docker stack deploy -c docker/compose.yml ahola
 
 =================================
 "

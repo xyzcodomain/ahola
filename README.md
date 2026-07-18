@@ -54,6 +54,49 @@ Example app config `~/ahola/apps/myapp.json`:
 | MinIO API | 9000 | http://localhost:9000 |
 | MinIO Console | 9001 | http://localhost:81 (via Caddy) |
 
+## Nodes & Clustering
+
+Link multiple Ahola nodes together via the Panel (port 3333):
+
+1. Open **Nodes** tab in the panel
+2. Click **Add Node**
+3. Enter:
+   - **Node ID**: unique name for the server
+   - **Public IP**: external IP for traffic
+   - **Local IP**: private IP for inter-node communication
+   - **Role**: `gateway`, `storage`, or `worker`
+
+Nodes are stored in `~/ahola/nodes/` as JSON files.
+
+### Docker Swarm
+
+To run MinIO in distributed mode across nodes, initialize a Docker Swarm:
+
+```bash
+# On manager node
+docker swarm init --advertise-addr <MANAGER_IP>
+
+# On worker nodes
+docker swarm join --token <WORKER_TOKEN> <MANAGER_IP>:2377
+```
+
+Then deploy the stack:
+
+```bash
+cd ~/ahola
+docker stack deploy -c docker/compose.yml ahola
+```
+
+### Distributed MinIO
+
+MinIO requires at least 4 nodes with drives for distributed/erasure-coded storage. Once you have 4+ nodes linked, update the MinIO service command in `docker/compose.yml` to use distributed mode:
+
+```yaml
+command: server http://node1/data http://node2/data http://node3/data http://node4/data --console-address ":9001"
+```
+
+Each node must have a `minio/data` volume mounted and be reachable by its local IP.
+
 ## Directory layout
 
 ```

@@ -33,6 +33,7 @@ services:
     volumes:
       - ../panel:/app
       - ../apps:/apps
+      - ../nodes:/nodes
     command:
       sh -c "npm install && node index.js"
     ports:
