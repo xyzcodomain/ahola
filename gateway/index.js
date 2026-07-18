@@ -10,23 +10,7 @@ const routes = require("./routes.json");
 const app = express();
 const APPS_DIR = path.join(process.env.HOME || "", "ahola", "apps");
 
-function getClientIp(req) {
-  return (
-    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-    req.headers["x-real-ip"] ||
-    req.socket?.remoteAddress ||
-    "unknown"
-  );
-}
-
 function renderUnknownRoute(req, res) {
-  const host = req.hostname;
-  const ip = getClientIp(req);
-  const now = new Date().toISOString();
-  const userAgent = req.headers["user-agent"] || "unknown";
-  const method = req.method;
-  const url = req.url;
-
   res.status(404).send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,131 +28,32 @@ function renderUnknownRoute(req, res) {
       align-items: center;
       justify-content: center;
       padding: 2rem;
-    }
-    .container {
-      max-width: 720px;
-      width: 100%;
-    }
-    .header {
-      margin-bottom: 2rem;
+      text-align: center;
     }
     .error-code {
-      font-size: 5rem;
+      font-size: 6rem;
       font-weight: 700;
       color: #f6821f;
       line-height: 1;
     }
     .error-title {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       font-weight: 600;
       color: #333;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
     }
     .error-subtitle {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #666;
-      margin-top: 0.25rem;
-    }
-    .card {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .section-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #f6821f;
-      margin-bottom: 1rem;
-    }
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-    .info-item {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .info-item:last-child {
-      border-bottom: none;
-    }
-    .label {
-      font-size: 0.75rem;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      margin-bottom: 0.25rem;
-    }
-    .value {
-      font-size: 0.95rem;
-      color: #333;
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-      word-break: break-all;
-    }
-    .hostname {
-      color: #f6821f;
-      font-weight: 600;
-    }
-    .footer {
-      margin-top: 2rem;
-      text-align: center;
-      color: #999;
-      font-size: 0.8rem;
-    }
-    .divider {
-      border: none;
-      border-top: 1px solid #e0e0e0;
-      margin: 1.25rem 0;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="error-code">404</div>
-      <div class="error-title">Unknown Route</div>
-      <div class="error-subtitle">The requested hostname does not have a configured route on this node.</div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Request Details</div>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="label">Hostname</div>
-          <div class="value hostname">${host}</div>
-        </div>
-        <div class="info-item">
-          <div class="label">Client IP</div>
-          <div class="value">${ip}</div>
-        </div>
-        <div class="info-item">
-          <div class="label">Method</div>
-          <div class="value">${method}</div>
-        </div>
-        <div class="info-item">
-          <div class="label">Path</div>
-          <div class="value">${url}</div>
-        </div>
-        <div class="info-item">
-          <div class="label">Time</div>
-          <div class="value">${now}</div>
-        </div>
-        <div class="info-item">
-          <div class="label">User Agent</div>
-          <div class="value">${userAgent}</div>
-        </div>
-      </div>
-    </div>
-
-    <hr class="divider">
-
-    <div class="footer">
-      Ahola Node
-    </div>
+  <div>
+    <div class="error-code">404</div>
+    <div class="error-title">Unknown Route</div>
+    <div class="error-subtitle">This hostname is not configured on this node.</div>
   </div>
 </body>
 </html>`);
