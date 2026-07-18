@@ -177,17 +177,19 @@ app.post("/api/nodes", (req, res) => {
   try {
     const { id, publicIp, localIp, role } = req.body;
 
-    if (!id || !publicIp) {
-      return res.status(400).json({ error: "id and publicIp are required" });
+    if (!id || (!publicIp && !localIp)) {
+      return res.status(400).json({ error: "id and at least one of publicIp or localIp are required" });
     }
 
     ensureNodesDir();
     const safeId = id.replace(/[^a-z0-9-]/gi, "-").toLowerCase();
+    const resolvedLocalIp = localIp || publicIp || "unknown";
+    const resolvedPublicIp = publicIp || localIp || "unknown";
     const filePath = path.join(NODES_DIR, `${safeId}.json`);
     const payload = JSON.stringify({
       id: safeId,
-      publicIp,
-      localIp: localIp || publicIp,
+      publicIp: resolvedPublicIp,
+      localIp: resolvedLocalIp,
       role: role || "worker",
       status: "active",
     }, null, 2);

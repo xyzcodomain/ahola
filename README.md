@@ -62,11 +62,25 @@ Link multiple Ahola nodes together via the Panel (port 3333):
 2. Click **Add Node**
 3. Enter:
    - **Node ID**: unique name for the server
-   - **Public IP**: external IP for traffic
+   - **Public IP**: external IP for traffic (optional for local/lab setups)
    - **Local IP**: private IP for inter-node communication
    - **Role**: `gateway`, `storage`, or `worker`
 
 Nodes are stored in `~/ahola/nodes/` as JSON files.
+
+### Local / Lab Setup (No Public IP)
+
+If your nodes are on the same private network and don’t have public IPs:
+
+1. Leave **Public IP** empty in the panel
+2. Enter each node’s **Local / Private IP** only
+3. The cluster will use local IPs for all inter-node communication
+4. Access the panel via the local network IP: `http://192.168.x.x:3333`
+
+This works for:
+- Home labs
+- Office networks
+- Any environment where nodes can reach each other via private IPs
 
 ### Docker Swarm
 
