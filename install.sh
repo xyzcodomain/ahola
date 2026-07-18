@@ -127,6 +127,12 @@ echo "[7/9] Configuring Caddy"
 
 install -D -m 0644 "$REPO_DIR/docker/caddy/Caddyfile" /etc/caddy/Caddyfile
 
+mkdir -p /var/www/html
+
+if [ -f "$REPO_DIR/docker/caddy/502.html" ]; then
+    cp "$REPO_DIR/docker/caddy/502.html" /var/www/html/502.html
+fi
+
 systemctl reload caddy || systemctl restart caddy
 
 

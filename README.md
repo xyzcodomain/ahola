@@ -49,7 +49,7 @@ Example app config `~/ahola/apps/myapp.json`:
 | Gateway | 8080 | http://localhost:8080 |
 | Caddy HTTPS | 443 | https://localhost |
 | MinIO API | 9000 | http://localhost:9000 |
-| MinIO Console | 9001 | http://localhost:9001 |
+| MinIO Console | 9001 | http://localhost:81 (via Caddy) |
 
 ## Directory layout
 
